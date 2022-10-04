@@ -9,6 +9,19 @@ from .models import Postit
 def homepage_view(request, *args, **kwargs):
     return render(request, 'pages/home.html', context={}, status=200)
 
+def postit_list_view(request, *args, **kwargs):
+    """
+    REST API VIEW
+    return json data
+    """
+    query_set = Postit.objects.all()
+    post_list = [{"id": x.id, "content": x.content} for x in query_set]
+    data = {
+        "isUser": False,
+        "response": post_list
+    }
+    return JsonResponse(data)
+
 
 def postit_detail_view(request, postit_id, *args, **kwargs):
     """
