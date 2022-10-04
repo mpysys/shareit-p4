@@ -16,12 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path
 
-from postit.views import homepage_view, postit_detail_view, postit_list_view
+from postit.views import (
+    homepage_view, postit_detail_view, postit_list_view,
+    post_create_view,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', homepage_view),
+    path('create-post/', post_create_view),
     path('postit/', postit_list_view),
     path('postit/<int:postit_id>', postit_detail_view),
 
-] 
+]
