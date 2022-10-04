@@ -14,13 +14,7 @@ Welcome to Shareit
 
 <script>
 
-const postElement = document.getElementById("posts") // script to replace innerHTML elements
-// postElement.innerHTML = 'Loading...' // setting a new html in the element
-
-// var el1 = "<h1>Hi there 1</h1>"
-// var el2 = "<h1>Hi there 2</h1>"
-// var el3 = "<h1>Hi there 3</h1>"
-// postElement.innerHTML = el1 + el2 + el3
+const postElement = document.getElementById("posts")
 
 // dynamically receive the request 
 const xhr = new XMLHttpRequest()
@@ -39,7 +33,10 @@ xhr.onload = function() {
     for (i=0; i<listedItems.length; i++) {
         console.log(i)
         console.log(listedItems[i])
+        var currentItem = "<div class='mb-4'><h1>" + listedItems[i].id + "</h1>" + "<p>" + listedItems[i].content + "</p></div<"
+            finalPostStr += currentItem
     }
+    postElement.innerHTML = finalPostStr
     // console.log(listedItems)
 }
 xhr.send()
