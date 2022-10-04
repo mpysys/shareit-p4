@@ -6,9 +6,15 @@
 
 
 {% block content %}
-Welcome to Shareit
 
-<div id ='posts'>
+<div class='row text-center'>
+    <div class='col'>
+        <h1>Welcome to Shareit</h1>
+    </div>
+</div>
+
+
+<div class='row' id ='posts'>
     Loading...
 </div>
 
@@ -27,7 +33,7 @@ function handleLiked(post_id, currentCount) {
 
 }
 
-function LikeBtn(post){
+function LikeBtn(post){ // like button that receives post id and number of likes
     return "<button class ='btn btn-primary btn-sm' onclick=handleLiked(" +
     post.id + ","+ post.likes + ")>" + post.likes +" Likes</button>"
 
@@ -35,7 +41,7 @@ function LikeBtn(post){
 
 function formatPostElement(post){
 
-    var formattedPost = "<div class='mb-4' post id='post-" + post.id
+    var formattedPost = "<div class='col-12 col-md-10 mx-auto border py-3 mb-4' post id='post-" + post.id
     + "'><p>" + post.content +
         "</p><div class ='btn-group'>" + LikeBtn(post) +
         "</div></div>"
@@ -55,7 +61,7 @@ xhr.onload = function() {
             finalPostStr += currentItem
     }
     postElement.innerHTML = finalPostStr
-    // console.log(listedItems)
+
 }
 xhr.send()
 
