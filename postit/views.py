@@ -1,5 +1,6 @@
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render
+import random
 
 from .models import Postit
 
@@ -15,7 +16,7 @@ def postit_list_view(request, *args, **kwargs):
     return json data
     """
     query_set = Postit.objects.all()
-    post_list = [{"id": x.id, "content": x.content} for x in query_set]
+    post_list = [{"id": x.id, "content": x.content, "likes": random.randint(0, 150)} for x in query_set]
     data = {
         "isUser": False,
         "response": post_list

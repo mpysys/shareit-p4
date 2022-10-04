@@ -22,9 +22,23 @@ const method = 'GET'
 const url = "/postit"
 const responseType = "json"
 
+function handleLiked(post_id, currentCount) {
+    console.log(post_id, currentCount)
+
+}
+
+function LikeBtn(post){
+    return "<button class ='btn btn-primary btn-sm' onclick=handleLiked(" +
+    post.id + ","+ post.likes + ")>" + post.likes +" Likes</button>"
+
+}
+
 function formatPostElement(post){
 
-    var formattedPost = "<div class='mb-4' post id='post-" + post.id + "'><p>" + post.content + "</p></div>"
+    var formattedPost = "<div class='mb-4' post id='post-" + post.id
+    + "'><p>" + post.content +
+        "</p><div class ='btn-group'>" + LikeBtn(post) +
+        "</div></div>"
     return formattedPost
 }
 xhr.responseType = responseType
