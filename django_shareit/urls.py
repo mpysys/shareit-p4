@@ -24,7 +24,7 @@ from postit.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', homepage_view),
-    path('create-post/', post_create_view),
+    path('create-post', post_create_view),
     path('postit/', postit_list_view),
     path('postit/<int:postit_id>', postit_detail_view),
 

@@ -54,6 +54,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'django_shareit.urls'
 
+CSRF_TRUSTED_ORIGINS = ['https://8000-mpysys-shareitp4-w6sva3flffd.ws-us67.gitpod.io']
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
