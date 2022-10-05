@@ -15,10 +15,11 @@
 
 <div class='row mb-4'>
     <div class='col-10 col-md-4 mx-auto'>
-        <form  class='form' method='POST' action='/create-post'>
+        <form  class='form' id='create-post-form' method='POST' action='/create-post'>
             {% csrf_token %}
+            <div class='d-none alert alert-danger' id="post-create-form-error"></div>
             <input type='hidden' value="/" name="next"/>
-            <textarea class='form-control' name="content" placeholder="Post message here..."></textarea>
+            <textarea required="required" class='form-control' name="content" placeholder="Post message here..."></textarea>
             <button type='submit' class="btn btn-primary">Post</button>
         </form>
     </div> 
@@ -30,13 +31,94 @@
 
 <script>
 
-const postElement = document.getElementById("posts")
+function handlePostCreateFormError(msg, display) {
+    var myErrorDiv = document.getElementById('post-create-form-error')
+    if (display === true) {
+        // show error
+        myErrorDiv.setAttribute('class', 'd-block alert alert-danger')
+        myErrorDiv.innerText = msg
+    } else {
+        //hide error
+        myErrorDiv.setAttribute('class', 'd-none alert alert-danger')
+    }
+}
 
-// dynamically receive the request 
-const xhr = new XMLHttpRequest()
-const method = 'GET' 
-const url = "/postit"
-const responseType = "json"
+function handleCreatePostFormDidSubmit(event) {
+    event.preventDefault()
+    const myForm = event.target
+    const myFormData = new FormData(myForm)
+    const url = myForm.getAttribute("action")
+    const method = myForm.getAttribute("method")
+    const xhr = new XMLHttpRequest()
+    const responseType = "json"
+    xhr.responseType = responseType
+    xhr.open(method, url)
+    xhr.setRequestHeader("HTTP_X_REQUESTED_WITH", "XMLHttpRequest")
+    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest")
+    xhr.onload = function() {
+        if (xhr.status === 201) {
+            handlePostCreateFormError("contentErrorMsg", false)
+            const newPostJson = xhr.response
+            const newPostElement = formatPostElement(newPostJson)
+            const ogHtml = postElementContainer.innerHTML
+            postElementContainer.innerHTML = newPostElement + ogHtml
+            myForm.reset()
+        } else if (xhr.status === 400) {
+            const errorJson = xhr.response
+            const contentError = errorJson.content
+            let contentErrorMsg;
+            if (contentError) {
+                contentErrorMsg = contentError[0]
+                if (contentErrorMsg) {
+                    handlePostCreateFormError(contentErrorMsg, true)
+                } else {
+                    alert("Error occured. Please try again")
+                }
+            } else {
+                alert("Error occured. Please try again")
+            }
+        } else if (xhr.status === 500) {
+            alert("Server error. Try again.")
+        }
+        
+    }
+    xhr.onerror = function() {
+        alert("An error occured. Please try again later.")
+    }
+    xhr.send(myFormData)  
+}
+
+const createPostFormEl = document.getElementById("create-post-form")
+createPostFormEl.addEventListener("submit", handleCreatePostFormDidSubmit)
+
+const postElementContainer = document.getElementById("posts")
+
+function loadPosts(postElement) {
+    // dynamically receive the request 
+    const xhr = new XMLHttpRequest()
+    const method = 'GET' 
+    const url = "/postit"
+    const responseType = "json"
+    xhr.responseType = responseType
+    xhr.open(method, url)
+    xhr.onload = function() {
+        const serverResponse = xhr.response
+        const listedItems = serverResponse.response // array of response
+        var finalPostStr = ""
+        var i;
+        for (i=0; i<listedItems.length; i++) {
+            var postObj = listedItems[i]
+            var currentItem = formatPostElement(postObj)
+                finalPostStr += currentItem
+        }
+        postElement.innerHTML = finalPostStr
+
+    }
+    xhr.send()
+}
+
+loadPosts(postElementContainer)
+
 
 function handleLiked(post_id, currentCount) {
     console.log(post_id, currentCount)
@@ -57,24 +139,6 @@ function formatPostElement(post){
         "</div></div>"
     return formattedPost
 }
-xhr.responseType = responseType
-xhr.open(method, url)
-xhr.onload = function() {
-    console.log(xhr.response)
-    const serverResponse = xhr.response
-    const listedItems = serverResponse.response // array of response
-    var finalPostStr = ""
-    var i;
-    for (i=0; i<listedItems.length; i++) {
-        var postObj = listedItems[i]
-        var currentItem = formatPostElement(postObj)
-            finalPostStr += currentItem
-    }
-    postElement.innerHTML = finalPostStr
-
-}
-xhr.send()
-
 
 </script>
 {% endblock content %}

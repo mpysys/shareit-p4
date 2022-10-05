@@ -10,8 +10,8 @@ class PostForm(forms.ModelForm):
         model = Postit
         fields = ['content']
 
-    def valid_content(self):
-        content = self.validated_data.get("content")
+    def clean_content(self):
+        content = self.cleaned_data.get("content")
         if len(content) > MAX_POST_LENGTH:
             raise forms.ValidationError("This message is too long")
         return content

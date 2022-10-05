@@ -17,13 +17,22 @@ def homepage_view(request, *args, **kwargs):
 
 def post_create_view(request, *args, **kwargs):
     form = PostForm(request.POST or None)
-    next_url = request.POST.get('next') or None # pass next_url to respones
+    next_url = request.POST.get('next') or None  # pass next_url to respones
     if form.is_valid():
         obj = form.save(commit=False)
         obj.save()
-        if next_url != None and url_has_allowed_host_and_scheme(next_url, 'localhost'): # if next_url invalid, no redirect - and check if safe
+        if request.headers.get('X-Requested-With' or
+                               "HTTP_X_REQUESTED_WITH") == 'XMLHttpRequest':
+            return JsonResponse(obj.serialize(),
+                                status=201)  # testing if ajax is true
+        if next_url is not None and url_has_allowed_host_and_scheme(next_url, 'localhost'):
+            # if next_url invalid, no redirect - and check if safe
             return redirect(next_url)
         form = PostForm()
+    if form.errors:
+        if request.headers.get('X-Requested-With' or
+                               "HTTP_X_REQUESTED_WITH") == 'XMLHttpRequest':
+            return JsonResponse(form.errors, status=400)
     return render(request, 'comp/form.html', context={"form": form})
 
 
@@ -33,8 +42,7 @@ def postit_list_view(request, *args, **kwargs):
     return json data
     """
     query_set = Postit.objects.all()
-    post_list = [{"id": x.id, "content": x.content,
-                 "likes": random.randint(0, 150)} for x in query_set]
+    post_list = [x.serialize() for x in query_set]
     data = {
         "isUser": False,
         "response": post_list
