@@ -1,6 +1,7 @@
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect
 import random
+from django.conf import settings
 from django.utils.http import url_has_allowed_host_and_scheme
 
 from .forms import PostForm
@@ -16,10 +17,18 @@ def homepage_view(request, *args, **kwargs):
 
 
 def post_create_view(request, *args, **kwargs):
+    user = request.user
+    if not request.user.is_authenticated:
+        user = None
+        if request.headers.get('X-Requested-With' or
+                               "HTTP_X_REQUESTED_WITH") == 'XMLHttpRequest':
+            return JsonResponse({}, status=401)
+        return redirect(settings.LOGIN_URL)
     form = PostForm(request.POST or None)
     next_url = request.POST.get('next') or None  # pass next_url to respones
     if form.is_valid():
         obj = form.save(commit=False)
+        obj.user = user
         obj.save()
         if request.headers.get('X-Requested-With' or
                                "HTTP_X_REQUESTED_WITH") == 'XMLHttpRequest':

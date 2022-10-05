@@ -27,6 +27,7 @@ SECRET_KEY = 'django-insecure-b-ip=7vgx#(75-2jziia$jnuewcpb9-s00b-op9tur2gdd5^4=
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '.gitpod.io']
+LOGIN_URL = "/login"
 
 
 # Application definition
