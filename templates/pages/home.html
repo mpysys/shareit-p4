@@ -77,7 +77,11 @@ function handleCreatePostFormDidSubmit(event) {
             } else {
                 alert("Error occured. Please try again")
             }
-        } else if (xhr.status === 500) {
+        } else if (xhr.status === 401) {
+            alert("Please login")
+            window.location.href = "/login"
+        }
+        else if (xhr.status === 500) {
             alert("Server error. Try again.")
         }
         
