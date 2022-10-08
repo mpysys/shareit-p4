@@ -29,6 +29,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['localhost', '.gitpod.io']
 LOGIN_URL = "/login"
 
+MAX_POST_LENGTH = 240
+
 
 # Application definition
 
@@ -39,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'rest_framework',
     'postit',
 ]
 
@@ -55,7 +57,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'django_shareit.urls'
 
-CSRF_TRUSTED_ORIGINS = ['https://8000-mpysys-shareitp4-w6sva3flffd.ws-us67.gitpod.io']
+CSRF_TRUSTED_ORIGINS = ['https://8000-mpysys-shareitp4-w6sva3flffd.ws-us70.gitpod.io']
 
 
 TEMPLATES = [
@@ -128,3 +130,21 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+DEFAULT_RENDERER_CLASSES = [
+    'rest_framework.renderers.JSONRenderer',
+]
+
+if DEBUG:
+    DEFAULT_RENDERER_CLASSES += [
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ]
+
+REST_FRAMEWORK = {
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication'
+    ],
+    'DEFAULT_RENDERER_CLASSES': DEFAULT_RENDERER_CLASSES
+
+}

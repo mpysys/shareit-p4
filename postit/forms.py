@@ -1,8 +1,9 @@
 from django import forms
-
+from django.conf import settings
 from .models import Postit
 
-MAX_POST_LENGTH = 240
+MAX_POST_LENGTH = settings.MAX_POST_LENGTH
+
 
 
 class PostForm(forms.ModelForm):

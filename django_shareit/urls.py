@@ -17,8 +17,12 @@ from django.contrib import admin
 from django.urls import path, re_path
 
 from postit.views import (
-    homepage_view, postit_detail_view, postit_list_view,
+    homepage_view,
+    postit_delete_view,
+    postit_detail_view,
+    postit_list_view,
     post_create_view,
+
 )
 
 urlpatterns = [
@@ -27,5 +31,6 @@ urlpatterns = [
     path('create-post', post_create_view),
     path('postit/', postit_list_view),
     path('postit/<int:postit_id>', postit_detail_view),
+    path('api/postit/<int:postit_id>/delete/', postit_delete_view),
 
 ]

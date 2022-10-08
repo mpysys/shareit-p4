@@ -4,9 +4,13 @@ import random
 from django.conf import settings
 from django.utils.http import url_has_allowed_host_and_scheme
 
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from .forms import PostForm
 from .models import Postit
-
+from .serializers import PostSerializer
 # Create your views here.
 
 
@@ -14,9 +18,49 @@ def homepage_view(request, *args, **kwargs):
     return render(request, 'pages/home.html', context={}, status=200)
 
 # create a new post and add to database
-
-
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def post_create_view(request, *args, **kwargs):
+    serializer = PostSerializer(data=request.POST)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=201)
+    return Response({}, status=400)
+
+
+@api_view(['GET'])
+def postit_list_view(request, *args, **kwargs):
+    query_set = Postit.objects.all()
+    serializer = PostSerializer(query_set, many=True)
+    return Response(serializer.data, status=200)
+
+
+@api_view(['GET'])
+def postit_detail_view(request, postit_id, *args, **kwargs):
+    query_set = Postit.objects.filter(id=postit_id)
+    if not query_set.exists():
+        return Response({}, status=404)
+    obj = query_set.first()
+    serializer = PostSerializer(obj)
+    return Response(serializer.data, status=200)
+
+
+@api_view(['DELETE', 'POST'])
+@permission_classes([IsAuthenticated])
+def postit_delete_view(request, postit_id, *args, **kwargs):
+    query_set = Postit.objects.filter(id=postit_id)
+    if not query_set.exists():
+        return Response({}, status=404)
+    query_set = query_set.filter(user=request.user)
+    if not query_set.exists():
+        return Response({"message": "You cannot delete this post"}, status=401)
+    obj = query_set.first()
+    obj.delete()
+    return Response({"message": "The post has been deleted"}, status=200)
+
+
+# OLD CODE
+def post_create_view_og_django(request, *args, **kwargs):
     user = request.user
     if not request.user.is_authenticated:
         user = None
@@ -45,7 +89,7 @@ def post_create_view(request, *args, **kwargs):
     return render(request, 'comp/form.html', context={"form": form})
 
 
-def postit_list_view(request, *args, **kwargs):
+def postit_list_view_og_django(request, *args, **kwargs):
     """
     REST API VIEW
     return json data
@@ -59,7 +103,7 @@ def postit_list_view(request, *args, **kwargs):
     return JsonResponse(data)
 
 
-def postit_detail_view(request, postit_id, *args, **kwargs):
+def postit_detail_view_og_django(request, postit_id, *args, **kwargs):
     """
     REST API VIEW
     return json data

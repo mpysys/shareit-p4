@@ -80,6 +80,9 @@ function handleCreatePostFormDidSubmit(event) {
         } else if (xhr.status === 401) {
             alert("Please login")
             window.location.href = "/login"
+        } else if (xhr.status === 403) {
+            alert("Please login")
+            window.location.href = "/login"
         }
         else if (xhr.status === 500) {
             alert("Server error. Try again.")
@@ -107,7 +110,7 @@ function loadPosts(postElement) {
     xhr.open(method, url)
     xhr.onload = function() {
         const serverResponse = xhr.response
-        const listedItems = serverResponse.response // array of response
+        const listedItems = serverResponse // array of response
         var finalPostStr = ""
         var i;
         for (i=0; i<listedItems.length; i++) {
