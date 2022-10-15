@@ -30,7 +30,7 @@ ALLOWED_HOSTS = ['localhost', '.gitpod.io']
 LOGIN_URL = "/login"
 
 MAX_POST_LENGTH = 240
-
+POST_ACTION_OPTIONS = ["like", "unlike", "share"]
 
 # Application definition
 

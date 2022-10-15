@@ -10,7 +10,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .forms import PostForm
 from .models import Postit
-from .serializers import PostSerializer
+from .serializers import PostSerializer, PostActionSerializer
 # Create your views here.
 
 
@@ -56,6 +56,33 @@ def postit_delete_view(request, postit_id, *args, **kwargs):
         return Response({"message": "You cannot delete this post"}, status=401)
     obj = query_set.first()
     obj.delete()
+    return Response({"message": "The post has been deleted"}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def postit_actions_view(request, *args, **kwargs):
+    """
+    User can take the following actions: like, unlike, share
+    id is required
+    """
+    serializer = PostActionSerializer(request.POST)
+    if serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        postit_id = data.get("id")
+        action = data.get("action")
+
+        query_set = Postit.objects.filter(id=postit_id)
+        if not query_set.exists():
+            return Response({}, status=404)
+        obj = query_set.first()
+        if action == "like":
+            obj.likes.add(request.user)
+        elif action == "unlike":
+            obj.likes.remove(request.user)
+        elif action == "share":
+            # will incorporate later // to do
+            pass 
     return Response({"message": "The post has been deleted"}, status=200)
 
 
