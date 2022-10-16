@@ -15,7 +15,8 @@ class PostLike(models.Model):
 
 class Postit(models.Model):
     # Map to SQL Data
-    user = models.ForeignKey(User, on_delete=models.CASCADE) # I want to delete everything from a user if user is deleted
+    parent = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # I want to delete everything from a user if user is deleted
     likes = models.ManyToManyField(User, related_name='post_user', blank=True, through=PostLike)
     content = models.TextField(blank=True, null=True)
     image = models.FileField(upload_to='images/', blank=True, null=True)

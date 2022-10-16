@@ -71,6 +71,7 @@ def postit_actions_view(request, *args, **kwargs):
         data = serializer.validated_data
         postit_id = data.get("id")
         action = data.get("action")
+        content = data.get("content")
 
         query_set = Postit.objects.filter(id=postit_id)
         if not query_set.exists():
@@ -83,7 +84,13 @@ def postit_actions_view(request, *args, **kwargs):
         elif action == "unlike":
             obj.likes.remove(request.user)
         elif action == "share":
-            # will incorporate later // to do
+            new_post = Postit.objects.create(
+                user=request.user, 
+                parent=obj,
+                content=content,
+                )
+            serializer = PostSerializer(new_post)
+            return Response(serializer.data, status=200)
             pass 
     return Response({}, status=200)
 
