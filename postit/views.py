@@ -66,8 +66,8 @@ def postit_actions_view(request, *args, **kwargs):
     User can take the following actions: like, unlike, share
     id is required
     """
-    serializer = PostActionSerializer(request.POST)
-    if serializer.is_valid(raise_exception=True)
+    serializer = PostActionSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
         data = serializer.validated_data
         postit_id = data.get("id")
         action = data.get("action")
@@ -78,12 +78,14 @@ def postit_actions_view(request, *args, **kwargs):
         obj = query_set.first()
         if action == "like":
             obj.likes.add(request.user)
+            serializer = PostSerializer(obj)
+            return Response(serializer.data, status=200)
         elif action == "unlike":
             obj.likes.remove(request.user)
         elif action == "share":
             # will incorporate later // to do
             pass 
-    return Response({"message": "The post has been deleted"}, status=200)
+    return Response({}, status=200)
 
 
 # OLD CODE
