@@ -10,24 +10,30 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .forms import PostForm
 from .models import Postit
-from .serializers import PostSerializer, PostActionSerializer
+from .serializers import (
+    PostSerializer,
+    PostActionSerializer,
+    PostCreateSerializer,
+)
 # Create your views here.
 
 
 def homepage_view(request, *args, **kwargs):
     return render(request, 'pages/home.html', context={}, status=200)
 
+
 # create a new post and add to database
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def post_create_view(request, *args, **kwargs):
-    serializer = PostSerializer(data=request.POST)
+    serializer = PostCreateSerializer(data=request.POST)
     if serializer.is_valid(raise_exception=True):
         serializer.save(user=request.user)
         return Response(serializer.data, status=201)
     return Response({}, status=400)
 
 
+# post list
 @api_view(['GET'])
 def postit_list_view(request, *args, **kwargs):
     query_set = Postit.objects.all()
@@ -35,6 +41,7 @@ def postit_list_view(request, *args, **kwargs):
     return Response(serializer.data, status=200)
 
 
+# Post detail / validation
 @api_view(['GET'])
 def postit_detail_view(request, postit_id, *args, **kwargs):
     query_set = Postit.objects.filter(id=postit_id)
@@ -45,6 +52,7 @@ def postit_detail_view(request, postit_id, *args, **kwargs):
     return Response(serializer.data, status=200)
 
 
+# Post Delete
 @api_view(['DELETE', 'POST'])
 @permission_classes([IsAuthenticated])
 def postit_delete_view(request, postit_id, *args, **kwargs):
@@ -59,6 +67,7 @@ def postit_delete_view(request, postit_id, *args, **kwargs):
     return Response({"message": "The post has been deleted"}, status=200)
 
 
+# Post like, unlike, share
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def postit_actions_view(request, *args, **kwargs):
@@ -85,13 +94,13 @@ def postit_actions_view(request, *args, **kwargs):
             obj.likes.remove(request.user)
         elif action == "share":
             new_post = Postit.objects.create(
-                user=request.user, 
+                user=request.user,
                 parent=obj,
                 content=content,
                 )
             serializer = PostSerializer(new_post)
             return Response(serializer.data, status=200)
-            pass 
+            pass
     return Response({}, status=200)
 
 

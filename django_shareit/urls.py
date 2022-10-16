@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, re_path
+from django.urls import path, re_path, include
 
 from postit.views import (
     homepage_view,
@@ -32,7 +32,6 @@ urlpatterns = [
     path('create-post', post_create_view),
     path('postit/', postit_list_view),
     path('postit/<int:postit_id>', postit_detail_view),
-    path('api/postit/action', postit_actions_view),
-    path('api/postit/<int:postit_id>/delete/', postit_delete_view),
+    path('api/postit/', include('postit.urls'))
 
 ]
