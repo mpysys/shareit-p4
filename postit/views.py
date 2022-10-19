@@ -92,6 +92,8 @@ def postit_actions_view(request, *args, **kwargs):
             return Response(serializer.data, status=200)
         elif action == "unlike":
             obj.likes.remove(request.user)
+            serializer = PostSerializer(obj)
+            return Response(serializer.data, status=200)
         elif action == "share":
             new_post = Postit.objects.create(
                 user=request.user,
@@ -99,7 +101,7 @@ def postit_actions_view(request, *args, **kwargs):
                 content=content,
                 )
             serializer = PostSerializer(new_post)
-            return Response(serializer.data, status=200)
+            return Response(serializer.data, status=201)
             pass
     return Response({}, status=200)
 
